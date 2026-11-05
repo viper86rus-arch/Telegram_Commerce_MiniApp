@@ -249,7 +249,11 @@ def create_order(
         # Валидация позиций по актуальным ценам из БД
         for item in items:
             product_id = item.get("id")
-            quantity = int(item.get("quantity", 1))
+            try:
+                quantity = int(item.get("quantity", 1))
+            except (ValueError, TypeError):
+                continue
+
             if quantity <= 0:
                 continue
 

@@ -106,6 +106,16 @@ class MiniAppRequestHandler(SimpleHTTPRequestHandler):
             self._send_json(products)
             return
 
+        # Получение отдельного товара по ID
+        if path.startswith("/api/products/"):
+            product_id = path.replace("/api/products/", "").strip()
+            product = database.get_product(product_id)
+            if product:
+                self._send_json(product)
+            else:
+                self._send_json({"error": "Товар не найден"}, status=404)
+            return
+
         # Раздача статических файлов веб-приложения
         super().do_GET()
 

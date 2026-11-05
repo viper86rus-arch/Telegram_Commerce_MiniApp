@@ -310,13 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (count > 0) {
       tg.MainButton.setText(`Оформить заказ: ${formatPrice(total)}`);
       tg.MainButton.show();
-      tg.MainButton.onClick(() => {
-        if (!elements.cartModal.classList.contains('open') && !elements.checkoutModal.classList.contains('open')) {
-          openCart();
-        } else if (elements.cartModal.classList.contains('open')) {
-          openCheckout();
-        }
-      });
     } else {
       tg.MainButton.hide();
     }
@@ -414,6 +407,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // ============================================================================
   // 7. ОБРАБОТЧИКИ СОБЫТИЙ
   // ============================================================================
+  // Слушатель нативной кнопки Telegram MainButton
+  tg.MainButton.onClick(() => {
+    if (!elements.cartModal.classList.contains('open') && !elements.checkoutModal.classList.contains('open')) {
+      openCart();
+    } else if (elements.cartModal.classList.contains('open')) {
+      openCheckout();
+    }
+  });
+
   elements.cartBtn.addEventListener('click', openCart);
   elements.floatingCheckoutBtn.addEventListener('click', openCart);
   elements.closeCartBtn.addEventListener('click', closeCart);
@@ -510,13 +512,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   elements.successCloseBtn.addEventListener('click', () => {
     elements.successModal.classList.remove('open');
+    elements.checkoutForm.reset();
   });
 
   // Закрытие модалок по клику на оверлей
-  [elements.cartModal, elements.checkoutModal, elements.productDetailModal].forEach(modal => {
+  [elements.cartModal, elements.checkoutModal, elements.productDetailModal, elements.successModal].forEach(modal => {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         modal.classList.remove('open');
+        if (modal === elements.successModal) {
+          elements.checkoutForm.reset();
+        }
         updateCartUI();
       }
     });
