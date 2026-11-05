@@ -134,37 +134,37 @@ def seed_demo_catalog(db_path: str = DEFAULT_DB_PATH) -> None:
                 "p-101", "hardware", "Мини-сервер CyberNode X1",
                 "Компактный бесшумный микросервер для домашних и офисных задач. 8 ядер, 32GB RAM, 1TB NVMe, пассивное охлаждение.",
                 48900, 56000, "Хит продаж",
-                "https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600&auto=format&fit=crop&q=80"
+                "img/p101_server.svg"
             ),
             (
                 "p-102", "hardware", "Аппаратный крипто-ключ V1-Shield",
                 "Защищенный токен аутентификации FIDO2/WebAuthn с биометрическим сканером и поддержкой 63-ФЗ ЭЦП.",
                 7400, 8900, "Безопасность",
-                "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=600&auto=format&fit=crop&q=80"
+                "img/p102_key.svg"
             ),
             (
                 "p-103", "gadgets", "Механическая клавиатура Stealth 75",
                 "Премиальная кастомная клавиатура с тактильными тихими свитчами, RGB-подсветкой и алюминиевым корпусом.",
                 12900, 15500, "Новинка",
-                "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80"
+                "img/p103_keyboard.svg"
             ),
             (
                 "p-104", "accessories", "Магнитная док-станция Matrix 3-in-1",
                 "Беспроводная зарядная станция 25W для смартфона, смарт-часов и наушников. Премиальный черный матовый металл.",
                 5900, 7200, "-18%",
-                "https://images.unsplash.com/photo-1622445262464-84b1456045b6?w=600&auto=format&fit=crop&q=80"
+                "img/p104_dock.svg"
             ),
             (
                 "p-105", "accessories", "Студийные наушники Obsidian Studio",
                 "Закрытые мониторные наушники с активным гибридным шумоподавлением (ANC) и детальным студийным звуком.",
                 18500, 22000, "Premium",
-                "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80"
+                "img/p105_headphones.svg"
             ),
             (
                 "p-106", "software", "Подписка Cloud Backup Pro (1 Год)",
                 "Автоматическое зашифрованное резервное копирование серверов и баз данных объемом 2TB с защитой от Ransomware.",
                 3900, None, "Сервис",
-                "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600&auto=format&fit=crop&q=80"
+                "img/p106_cloud.svg"
             ),
         ]
         cursor.executemany(

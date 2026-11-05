@@ -550,19 +550,19 @@ document.addEventListener('DOMContentLoaded', () => {
         id: 'p-101', category_id: 'hardware', name: 'Мини-сервер CyberNode X1',
         description: '8 ядер, 32GB RAM, 1TB NVMe, бесшумное пассивное охлаждение.',
         price: 48900, old_price: 56000, badge: 'Хит',
-        image_url: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=600&auto=format&fit=crop&q=80'
+        image_url: 'img/p101_server.svg'
       },
       {
         id: 'p-103', category_id: 'gadgets', name: 'Механическая клавиатура Stealth 75',
         description: 'Кастомная алюминиевая клавиатура с тактильными тихими свитчами.',
         price: 12900, old_price: 15500, badge: 'Новинка',
-        image_url: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80'
+        image_url: 'img/p103_keyboard.svg'
       },
       {
         id: 'p-104', category_id: 'accessories', name: 'Магнитная док-станция Matrix 3-in-1',
         description: 'Быстрая зарядка 25W для смартфона, часов и наушников.',
         price: 5900, old_price: 7200, badge: '-18%',
-        image_url: 'https://images.unsplash.com/photo-1622445262464-84b1456045b6?w=600&auto=format&fit=crop&q=80'
+        image_url: 'img/p104_dock.svg'
       }
     ];
   }

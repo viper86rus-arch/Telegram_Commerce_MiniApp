@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#021a1f"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="cloudGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+    <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="400" height="400" fill="url(#bg)"/>
+
+  <!-- Data Flow Network Grid Background -->
+  <g stroke="#0e3a47" stroke-width="1.5" stroke-dasharray="4,6">
+    <circle cx="200" cy="200" r="160"/>
+    <circle cx="200" cy="200" r="120"/>
+  </g>
+
+  <!-- Stylized Cloud Silhouette -->
+  <path d="M140 230 C120 230 100 215 100 190 C100 165 125 150 145 150 C155 125 185 110 215 115 C245 120 265 140 270 165 C285 165 300 178 300 195 C300 215 285 230 265 230 Z" 
+        fill="#082f49" stroke="#38bdf8" stroke-width="3" filter="url(#cyanGlow)"/>
+
+  <!-- Security Padlock in Center -->
+  <rect x="175" y="195" width="50" height="45" rx="8" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+  <path d="M185 195 L185 175 C185 165, 215 165, 215 175 L215 195" fill="none" stroke="#e0f2fe" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="200" cy="214" r="5" fill="#e0f2fe"/>
+  <line x1="200" y1="219" x2="200" y2="228" stroke="#e0f2fe" stroke-width="3"/>
+
+  <!-- Sync Circular Arrows -->
+  <path d="M140 270 A 70 70 0 0 0 260 270" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-dasharray="12,8"/>
+  <polygon points="262,260 272,272 258,278" fill="#22c55e"/>
+  
+  <path d="M260 290 A 70 70 0 0 0 140 290" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round" stroke-dasharray="12,8"/>
+  <polygon points="138,300 128,288 142,282" fill="#38bdf8"/>
+</svg>

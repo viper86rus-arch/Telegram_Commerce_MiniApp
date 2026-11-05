@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06120e"/>
+      <stop offset="100%" stop-color="#020806"/>
+    </linearGradient>
+    <linearGradient id="tokenBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="shieldGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="400" height="400" fill="url(#bg)"/>
+
+  <!-- USB Connector -->
+  <rect x="170" y="60" width="60" height="50" rx="4" fill="#64748b" stroke="#94a3b8" stroke-width="2"/>
+  <rect x="182" y="70" width="10" height="25" fill="#f59e0b"/>
+  <rect x="208" y="70" width="10" height="25" fill="#f59e0b"/>
+
+  <!-- Token Body -->
+  <rect x="140" y="100" width="120" height="210" rx="20" fill="url(#tokenBody)" stroke="#334155" stroke-width="2.5"/>
+
+  <!-- Biometric Sensor Circle -->
+  <circle cx="200" cy="165" r="28" fill="#0b1320" stroke="#22c55e" stroke-width="2" filter="url(#glow)"/>
+  <circle cx="200" cy="165" r="20" fill="#0f172a" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <circle cx="200" cy="165" r="8" fill="#22c55e"/>
+
+  <!-- Shield Icon Graphic -->
+  <path d="M200 230 L230 245 C230 270 200 290 200 290 C200 290 170 270 170 245 Z" fill="none" stroke="url(#shieldGlow)" stroke-width="3" filter="url(#glow)"/>
+  <path d="M200 245 L200 275" stroke="#22c55e" stroke-width="2"/>
+  <path d="M185 255 L200 245 L215 255" fill="none" stroke="#22c55e" stroke-width="2"/>
+
+  <!-- Keychain Loop -->
+  <circle cx="200" cy="335" r="14" fill="none" stroke="#475569" stroke-width="3"/>
+  <circle cx="200" cy="335" r="8" fill="#020806"/>
+</svg>

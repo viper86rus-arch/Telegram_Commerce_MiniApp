@@ -18,7 +18,7 @@ import signal
 import threading
 import argparse
 from http import HTTPStatus
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import urllib.request
 import urllib.error
@@ -328,7 +328,7 @@ def main():
 
     # Запуск HTTP сервера
     server_address = (args.host, args.port)
-    httpd = HTTPServer(server_address, MiniAppRequestHandler)
+    httpd = ThreadingHTTPServer(server_address, MiniAppRequestHandler)
     httpd.bot_controller = bot_controller
 
     logger.info("=" * 65)
