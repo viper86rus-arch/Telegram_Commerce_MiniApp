@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0d1117">
+  <title>V1PER Commerce — Telegram Mini App</title>
+  
+  <!-- Telegram WebApp SDK v7.0+ -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    
+    <!-- Шапка приложения -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-badge">⚡ V1-STORE</div>
+        <div class="brand-subtitle">Флагманский Mini App</div>
+      </div>
+      <div class="header-right">
+        <button id="cartBtn" class="cart-trigger-btn" aria-label="Корзина">
+          <span class="cart-icon">🛒</span>
+          <span id="cartBadge" class="cart-badge">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Поисковая строка -->
+    <div class="search-section">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Поиск девайсов и сервисов..." autocomplete="off">
+        <button id="clearSearchBtn" class="clear-search-btn" style="display: none;">✕</button>
+      </div>
+    </div>
+
+    <!-- Категории (горизонтальный скролл) -->
+    <nav class="categories-nav">
+      <div id="categoriesList" class="categories-scroll">
+        <!-- Генерируется динамически через JS -->
+      </div>
+    </nav>
+
+    <!-- Каталог товаров -->
+    <main class="products-section">
+      <div class="section-title-row">
+        <h2 id="currentCategoryTitle" class="section-title">Каталог решений</h2>
+        <span id="productsCount" class="products-count">...</span>
+      </div>
+
+      <div id="productsGrid" class="products-grid">
+        <!-- Скелетоны / Карточки товаров -->
+        <div class="product-skeleton"></div>
+        <div class="product-skeleton"></div>
+      </div>
+    </main>
+
+    <!-- Плавающий нижний бар корзины (если не в нативном Telegram MainButton) -->
+    <aside id="floatingCartBar" class="floating-cart-bar">
+      <div class="floating-cart-info">
+        <span class="floating-items-label"><span id="floatingCartCount">0</span> поз.</span>
+        <span id="floatingCartTotal" class="floating-total-price">0 ₽</span>
+      </div>
+      <button id="floatingCheckoutBtn" class="btn-checkout-primary">
+        <span>В корзину</span>
+        <span class="arrow-icon">→</span>
+      </button>
+    </aside>
+
+    <!-- Шторка корзины (Cart Drawer / Bottom Sheet) -->
+    <div id="cartModal" class="modal-overlay">
+      <div class="cart-drawer">
+        <div class="drawer-header">
+          <div class="drawer-drag-pill"></div>
+          <div class="drawer-title-row">
+            <h3>Корзина заказов</h3>
+            <button id="closeCartBtn" class="drawer-close-btn">✕</button>
+          </div>
+        </div>
+
+        <div id="cartItemsList" class="cart-items-container">
+          <!-- Товары в корзине -->
+        </div>
+
+        <div class="cart-footer">
+          <div class="summary-row">
+            <span>Сумма заказа:</span>
+            <span id="cartSubtotal" class="summary-val">0 ₽</span>
+          </div>
+          <div class="summary-row delivery-row">
+            <span>Доставка по РФ:</span>
+            <span class="summary-val text-green">Бесплатно</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-row total-row">
+            <span>Итого к оплате:</span>
+            <span id="cartFinalTotal" class="total-val">0 ₽</span>
+          </div>
+
+          <button id="proceedToCheckoutBtn" class="btn-action-glow">
+            Оформить заказ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модалка оформления заказа (Checkout) -->
+    <div id="checkoutModal" class="modal-overlay">
+      <div class="cart-drawer checkout-drawer">
+        <div class="drawer-header">
+          <div class="drawer-drag-pill"></div>
+          <div class="drawer-title-row">
+            <h3>Детали доставки</h3>
+            <button id="closeCheckoutBtn" class="drawer-close-btn">✕</button>
+          </div>
+        </div>
+
+        <form id="checkoutForm" class="checkout-form">
+          <div class="form-group">
+            <label for="inputName">Имя или организация</label>
+            <input type="text" id="inputName" required placeholder="Например: Артем или ООО Вектор">
+          </div>
+
+          <div class="form-group">
+            <label for="inputPhone">Номер телефона</label>
+            <input type="tel" id="inputPhone" required placeholder="+7 (999) 000-00-00">
+          </div>
+
+          <div class="form-group">
+            <label for="inputAddress">Адрес или город доставки</label>
+            <input type="text" id="inputAddress" required placeholder="г. Москва, ул. Ленина, д. 10">
+          </div>
+
+          <div class="form-group">
+            <label>Способ оплаты</label>
+            <div class="payment-methods-grid">
+              <label class="payment-method-card active">
+                <input type="radio" name="paymentMethod" value="Telegram Stars" checked>
+                <div class="method-content">
+                  <span class="method-icon">⭐</span>
+                  <span class="method-title">Telegram Stars</span>
+                </div>
+              </label>
+              <label class="payment-method-card">
+                <input type="radio" name="paymentMethod" value="СБП / Карта">
+                <div class="method-content">
+                  <span class="method-icon">💳</span>
+                  <span class="method-title">СБП / Карта</span>
+                </div>
+              </label>
+              <label class="payment-method-card">
+                <input type="radio" name="paymentMethod" value="Счет для бизнеса">
+                <div class="method-content">
+                  <span class="method-icon">📄</span>
+                  <span class="method-title">Счет (Юр. лица)</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" id="submitOrderBtn" class="btn-action-glow">
+            Подтвердить заказ
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Модалка успеха (Success Order) -->
+    <div id="successModal" class="modal-overlay">
+      <div class="success-card">
+        <div class="success-icon-badge">✓</div>
+        <h3>Заказ принят!</h3>
+        <p class="success-subtitle">Номер вашего заказа:</p>
+        <div id="successOrderNum" class="order-number-pill">ORD-2026-XXXX</div>
+        <p class="success-desc">
+          Детали заказа и электронный чек отправлены в чат Telegram. Наш менеджер уже собирает посылку.
+        </p>
+        <button id="successCloseBtn" class="btn-action-glow">
+          Вернуться в магазин
+        </button>
+      </div>
+    </div>
+
+    <!-- Модалка деталей товара -->
+    <div id="productDetailModal" class="modal-overlay">
+      <div class="product-detail-card">
+        <button id="closeDetailBtn" class="detail-close-btn">✕</button>
+        <div class="detail-img-box">
+          <img id="detailImg" src="" alt="Товар">
+          <span id="detailBadge" class="detail-badge">Хит</span>
+        </div>
+        <div class="detail-content">
+          <h3 id="detailName">Название товара</h3>
+          <div class="detail-price-row">
+            <span id="detailPrice" class="detail-current-price">0 ₽</span>
+            <span id="detailOldPrice" class="detail-old-price"></span>
+          </div>
+          <p id="detailDesc" class="detail-description">Описание товара...</p>
+          <button id="detailAddToCartBtn" class="btn-action-glow">
+            Добавить в корзину
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
