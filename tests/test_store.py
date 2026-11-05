@@ -22,7 +22,11 @@ from urllib.parse import urlencode
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
 
+import threading
+from http.server import ThreadingHTTPServer
+
 import database
+import server
 
 
 class TestDatabaseEngine(unittest.TestCase):
@@ -95,7 +99,20 @@ class TestDatabaseEngine(unittest.TestCase):
 class TestAPIAndStaticAssets(unittest.TestCase):
     """Тестирование REST API эндпоинтов и целостности статических ассетов."""
 
-    BASE_URL = "http://127.0.0.1:8000"
+    @classmethod
+    def setUpClass(cls):
+        """Запуск изолированного тестового HTTP-сервера на динамическом порту."""
+        cls.server = ThreadingHTTPServer(("127.0.0.1", 0), server.MiniAppRequestHandler)
+        cls.port = cls.server.server_port
+        cls.BASE_URL = f"http://127.0.0.1:{cls.port}"
+        cls.server_thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
+        cls.server_thread.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Остановка и корректное освобождение сокета тестового сервера."""
+        cls.server.shutdown()
+        cls.server.server_close()
 
     def _get(self, path):
         req = urllib.request.Request(f"{self.BASE_URL}{path}")

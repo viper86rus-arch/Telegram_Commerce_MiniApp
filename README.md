@@ -1,12 +1,14 @@
 # 🛍️ Telegram Commerce MiniApp (TMA)
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-22c55e.svg?logo=githubpages&logoColor=white)](https://viper86rus-arch.github.io/Telegram_Commerce_MiniApp/)
+[![CI](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp/actions/workflows/ci.yml/badge.svg)](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp/actions/workflows/ci.yml)
+[![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![Telegram](https://img.shields.io/badge/Telegram_Bot_API-v7.0%2B-2CA5E0.svg?logo=telegram&logoColor=white)](https://core.telegram.org/bots/webapps)
 [![Dependencies](https://img.shields.io/badge/Dependencies-Zero_Pip_%2F_Zero_Bloat-blueviolet.svg)](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp)
 [![Database](https://img.shields.io/badge/Database-SQLite3_Standard_Lib-003B57.svg?logo=sqlite&logoColor=white)](https://sqlite.org/)
-[![UI](https://img.shields.io/badge/Frontend-Vanilla_JS_%2F_Glassmorphism-F7DF1E.svg)](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 
+> 🎮 **[Запустить интерактивное Live Demo в браузере](https://viper86rus-arch.github.io/Telegram_Commerce_MiniApp/)**  
 > **Полнофункциональный эталонный интернет-магазин и витрина заказов для Telegram Mini Apps (TMA).**  
 > Спроектирован по стандарту высокой производительности: ультра-быстрый адаптивный фронтенд без тяжелых сборок (загрузка <100 мс) и серверный бэкенд на стандартной библиотеке Python с транзакционной базой данных SQLite. Не требует установки сторонних pip-библиотек.
 

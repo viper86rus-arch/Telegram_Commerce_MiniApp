@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="serverBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="cyanGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <rect width="400" height="400" fill="url(#bg)"/>
+  
+  <!-- Server Blade 1 -->
+  <rect x="70" y="80" width="260" height="65" rx="8" fill="url(#serverBody)" stroke="#334155" stroke-width="2"/>
+  <rect x="90" y="100" width="90" height="25" rx="4" fill="#090d16" stroke="#1e293b"/>
+  <circle cx="270" cy="112" r="5" fill="#38bdf8" filter="url(#glow)"/>
+  <circle cx="290" cy="112" r="5" fill="#22c55e" filter="url(#glow)"/>
+  <circle cx="310" cy="112" r="5" fill="#38bdf8"/>
+  <line x1="90" y1="135" x2="310" y2="135" stroke="url(#cyanGlow)" stroke-width="2"/>
+
+  <!-- Server Blade 2 -->
+  <rect x="70" y="165" width="260" height="65" rx="8" fill="url(#serverBody)" stroke="#334155" stroke-width="2"/>
+  <rect x="90" y="185" width="90" height="25" rx="4" fill="#090d16" stroke="#1e293b"/>
+  <circle cx="270" cy="197" r="5" fill="#22c55e" filter="url(#glow)"/>
+  <circle cx="290" cy="197" r="5" fill="#22c55e" filter="url(#glow)"/>
+  <circle cx="310" cy="197" r="5" fill="#38bdf8"/>
+  <line x1="90" y1="220" x2="310" y2="220" stroke="#334155" stroke-width="2"/>
+
+  <!-- Server Blade 3 -->
+  <rect x="70" y="250" width="260" height="65" rx="8" fill="url(#serverBody)" stroke="#334155" stroke-width="2"/>
+  <rect x="90" y="270" width="90" height="25" rx="4" fill="#090d16" stroke="#1e293b"/>
+  <circle cx="270" cy="282" r="5" fill="#38bdf8" filter="url(#glow)"/>
+  <circle cx="290" cy="282" r="5" fill="#eab308"/>
+  <circle cx="310" cy="282" r="5" fill="#22c55e" filter="url(#glow)"/>
+  <line x1="90" y1="305" x2="310" y2="305" stroke="url(#cyanGlow)" stroke-width="2"/>
+
+  <!-- Vents & Details -->
+  <g stroke="#475569" stroke-width="1.5">
+    <line x1="200" y1="102" x2="245" y2="102"/>
+    <line x1="200" y1="112" x2="245" y2="112"/>
+    <line x1="200" y1="122" x2="245" y2="122"/>
+    <line x1="200" y1="187" x2="245" y2="187"/>
+    <line x1="200" y1="197" x2="245" y2="197"/>
+    <line x1="200" y1="207" x2="245" y2="207"/>
+    <line x1="200" y1="272" x2="245" y2="272"/>
+    <line x1="200" y1="282" x2="245" y2="282"/>
+    <line x1="200" y1="292" x2="245" y2="292"/>
+  </g>
+</svg>
