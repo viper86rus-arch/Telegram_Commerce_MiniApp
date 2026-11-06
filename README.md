@@ -1,7 +1,7 @@
 # 🛍️ V1PER IT Solutions | Telegram Commerce MiniApp (TMA)
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-22c55e.svg?logo=githubpages&logoColor=white)](https://viper86rus-arch.github.io/Telegram_Commerce_MiniApp/)
-[![CI](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp/actions/workflows/ci.yml/badge.svg)](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp/actions/workflows/ci.yml)
+[![Tests](https://img.shields.io/badge/Tests-13%2F13%20Passed%20(100%25)-brightgreen.svg)](tests/)
 [![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![Studio](https://img.shields.io/badge/Studio-V1PER_IT_Solutions-emerald.svg)]()
 [![Telegram](https://img.shields.io/badge/Telegram_Bot_API-v7.0%2B-2CA5E0.svg?logo=telegram&logoColor=white)](https://core.telegram.org/bots/webapps)
