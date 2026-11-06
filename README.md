@@ -22,7 +22,7 @@
 > - 🚚 **Логистика и доставка:** интеграция модулей расчёта стоимости и пунктов выдачи СДЭК, Boxberry, Почты РФ.
 > - 🛡️ **Инфраструктура:** развёртывание на надёжном сервере с SSL-сертификатом, CDN и поддержкой 24/7.
 >
-> 📩 **Заказать разработку магазина:** [Создать заявку (Issue)](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp/issues) или написать в [Профиль студии V1PER](https://github.com/viper86rus-arch).
+> 📩 **Заказать разработку магазина:** [Заказать на Kwork (Безопасная сделка)](https://kwork.ru/user/V1PER86RUS) • [Создать заявку (Issue)](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp/issues) • [Профиль студии](https://github.com/viper86rus-arch)
 
 ---
 
