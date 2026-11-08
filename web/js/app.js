@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     state.categories.forEach(cat => {
       const pill = document.createElement('button');
       pill.className = `category-pill ${cat.id === state.activeCategory ? 'active' : ''}`;
-      pill.innerHTML = `<span>${cat.icon}</span> <span>${cat.name}</span>`;
+      pill.innerHTML = `<span>${escapeHtml(cat.icon)}</span> <span>${escapeHtml(cat.name)}</span>`;
       pill.addEventListener('click', () => {
         tg.HapticFeedback?.impactOccurred('light');
         state.activeCategory = cat.id;
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.innerHTML = `
         <div class="product-img-box">
-          <img src="${p.image_url}" alt="${escapeHtml(p.name)}" loading="lazy">
+          <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy">
           ${p.badge ? `<span class="product-badge">${escapeHtml(p.badge)}</span>` : ''}
         </div>
         <div class="product-info">
@@ -203,17 +203,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderActionButtonHtml(productId, qty) {
+    const safeId = escapeHtml(productId);
     if (qty > 0) {
       return `
         <div class="qty-controls">
-          <button class="qty-btn btn-dec" data-id="${productId}">−</button>
+          <button class="qty-btn btn-dec" data-id="${safeId}">−</button>
           <span class="qty-value">${qty}</span>
-          <button class="qty-btn btn-inc" data-id="${productId}">+</button>
+          <button class="qty-btn btn-inc" data-id="${safeId}">+</button>
         </div>
       `;
     }
     return `
-      <button class="add-btn btn-add" data-id="${productId}">
+      <button class="add-btn btn-add" data-id="${safeId}">
         <span>В корзину</span>
       </button>
     `;
@@ -339,16 +340,17 @@ document.addEventListener('DOMContentLoaded', () => {
     items.forEach(({ product, quantity, subtotal }) => {
       const itemRow = document.createElement('div');
       itemRow.className = 'cart-item';
+      const safeId = escapeHtml(product.id);
       itemRow.innerHTML = `
-        <img class="cart-item-img" src="${product.image_url}" alt="${escapeHtml(product.name)}">
+        <img class="cart-item-img" src="${escapeHtml(product.image_url)}" alt="${escapeHtml(product.name)}">
         <div class="cart-item-info">
           <div class="cart-item-name">${escapeHtml(product.name)}</div>
           <div class="cart-item-price">${formatPrice(subtotal)}</div>
         </div>
         <div class="qty-controls">
-          <button class="qty-btn btn-cart-dec" data-id="${product.id}">−</button>
+          <button class="qty-btn btn-cart-dec" data-id="${safeId}">−</button>
           <span class="qty-value">${quantity}</span>
-          <button class="qty-btn btn-cart-inc" data-id="${product.id}">+</button>
+          <button class="qty-btn btn-cart-inc" data-id="${safeId}">+</button>
         </div>
       `;
 

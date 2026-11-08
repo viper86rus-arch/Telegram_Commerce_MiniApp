@@ -95,6 +95,29 @@ class TestDatabaseEngine(unittest.TestCase):
                 db_path=self.test_db
             )
 
+    def test_csv_export_and_formula_injection_sanitization(self):
+        """Тест безопасного экспорта в CSV с нейтрализацией Formula Injection (CWE-1236)."""
+        database.create_order(
+            customer_name="=cmd|'/C calc'!A0",
+            phone="+7 999 123-45-67",
+            address="@SUM(1+1)",
+            payment_method="-DDE",
+            items=[{"id": "p-101", "quantity": 1}],
+            db_path=self.test_db
+        )
+        csv_path = os.path.join(PROJECT_ROOT, "tests", "test_orders_export.csv")
+        try:
+            database.export_orders_to_csv(filepath=csv_path, db_path=self.test_db)
+            self.assertTrue(os.path.exists(csv_path))
+            with open(csv_path, "r", encoding="utf-8-sig") as f:
+                content = f.read()
+            self.assertIn("'=cmd|'/C calc'!A0", content)
+            self.assertIn("'@SUM(1+1)", content)
+            self.assertIn("'-DDE", content)
+        finally:
+            if os.path.exists(csv_path):
+                os.remove(csv_path)
+
 
 class TestAPIAndStaticAssets(unittest.TestCase):
     """Тестирование REST API эндпоинтов и целостности статических ассетов."""

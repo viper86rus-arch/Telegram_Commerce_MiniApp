@@ -17,6 +17,7 @@ import logging
 import signal
 import threading
 import argparse
+import html
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
@@ -67,6 +68,21 @@ class MiniAppRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         self.wfile.write(payload)
+
+    def list_directory(self, path):
+        """Запрет листинга каталогов для предотвращения раскрытия структуры файлов (CWE-548)."""
+        self.send_error(HTTPStatus.FORBIDDEN, "Directory listing is forbidden")
+        return None
+
+    def end_headers(self):
+        """Добавление критически важных заголовков безопасности."""
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self' 'unsafe-inline' https://telegram.org https://*.telegram.org; img-src 'self' data: https:; frame-ancestors https://web.telegram.org https://*.telegram.org;"
+        )
+        super().end_headers()
 
     def do_OPTIONS(self):
         """Поддержка CORS preflight запросов для гибкой интеграции."""
@@ -120,13 +136,27 @@ class MiniAppRequestHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self):
-        """Маршрутизация POST-запросов (Оформление заказов)."""
+        """Маршрутизация POST-запросов (Оформление заказов) с защитой от DoS и валидацией."""
         parsed = urlparse(self.path)
         path = parsed.path
 
         if path == "/api/order":
+            MAX_CONTENT_LENGTH = 1 * 1024 * 1024  # Лимит 1 МБ (CWE-770)
+            content_len_hdr = self.headers.get("Content-Length", "")
+            if not content_len_hdr or not content_len_hdr.isdigit():
+                self._send_json({"status": "error", "message": "Некорректный или отсутствующий заголовок Content-Length."}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+            content_len = int(content_len_hdr)
+            if content_len <= 0:
+                self._send_json({"status": "error", "message": "Content-Length должен быть положительным числом."}, status=HTTPStatus.BAD_REQUEST)
+                return
+
+            if content_len > MAX_CONTENT_LENGTH:
+                self._send_json({"status": "error", "message": "Превышен максимальный размер тела запроса (1 МБ)."}, status=HTTPStatus.REQUEST_ENTITY_TOO_LARGE)
+                return
+
             try:
-                content_len = int(self.headers.get("Content-Length", 0))
                 raw_body = self.rfile.read(content_len).decode("utf-8")
                 order_data = json.loads(raw_body)
 
@@ -153,9 +183,13 @@ class MiniAppRequestHandler(SimpleHTTPRequestHandler):
                     "message": "Заказ успешно принят в обработку."
                 }, status=201)
 
+            except json.JSONDecodeError:
+                self._send_json({"status": "error", "message": "Невалидный формат JSON"}, status=HTTPStatus.BAD_REQUEST)
+            except ValueError as e:
+                self._send_json({"status": "error", "message": str(e)}, status=HTTPStatus.BAD_REQUEST)
             except Exception as e:
                 logger.error(f"Ошибка при оформлении заказа: {e}", exc_info=True)
-                self._send_json({"status": "error", "message": str(e)}, status=400)
+                self._send_json({"status": "error", "message": "Внутренняя ошибка сервера"}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
             return
 
         self.send_error(HTTPStatus.NOT_FOUND, "Эндпоинт не найден")
@@ -208,22 +242,32 @@ class TelegramBotController:
         self._api_request("sendMessage", payload)
 
     def notify_order_created(self, order: dict) -> None:
-        """Отправляет уведомление администратору о поступлении нового заказа."""
+        """Отправляет уведомление администратору о поступлении нового заказа с экранированием HTML."""
         if not self.admin_chat_id:
             return
 
+        order_id = html.escape(str(order.get("order_id", "")))
+        customer_name = html.escape(str(order.get("customer_name", "")))
+        phone = html.escape(str(order.get("phone", "")))
+        address = html.escape(str(order.get("address", "")))
+        payment_method = html.escape(str(order.get("payment_method", "")))
+        total_amount = order.get("total_amount", 0)
+
         lines = [
             "🛍️ <b>НОВЫЙ ЗАКАЗ ИЗ TELEGRAM MINI APP!</b>\n",
-            f"<b>Номер:</b> <code>{order['order_id']}</code>",
-            f"<b>Клиент:</b> {order['customer_name']}",
-            f"<b>Телефон:</b> {order['phone']}",
-            f"<b>Адрес:</b> {order['address']}",
-            f"<b>Оплата:</b> {order['payment_method']}",
-            f"<b>Сумма:</b> <b>{order['total_amount']:,} ₽</b>".replace(",", " "),
+            f"<b>Номер:</b> <code>{order_id}</code>",
+            f"<b>Клиент:</b> {customer_name}",
+            f"<b>Телефон:</b> {phone}",
+            f"<b>Адрес:</b> {address}",
+            f"<b>Оплата:</b> {payment_method}",
+            f"<b>Сумма:</b> <b>{total_amount:,} ₽</b>".replace(",", " "),
             "\n<b>Состав заказа:</b>"
         ]
-        for idx, itm in enumerate(order["items"], 1):
-            lines.append(f"{idx}. {itm['product_name']} — {itm['quantity']} шт. × {itm['unit_price']:,} ₽".replace(",", " "))
+        for idx, itm in enumerate(order.get("items", []), 1):
+            p_name = html.escape(str(itm.get("product_name", "")))
+            qty = itm.get("quantity", 0)
+            u_price = itm.get("unit_price", 0)
+            lines.append(f"{idx}. {p_name} — {qty} шт. × {u_price:,} ₽".replace(",", " "))
 
         text = "\n".join(lines)
         self.send_message(self.admin_chat_id, text)
@@ -265,7 +309,7 @@ class TelegramBotController:
 
         # Обработка команды /start
         if text.startswith("/start"):
-            first_name = msg["from"].get("first_name", "пользователь")
+            first_name = html.escape(msg["from"].get("first_name", "пользователь"))
             welcome_text = (
                 f"Здравствуйте, <b>{first_name}</b>!\n\n"
                 f"Добро пожаловать в <b>V1-Store</b> — демонстрационный магазин "
@@ -287,10 +331,15 @@ class TelegramBotController:
         elif "web_app_data" in msg:
             try:
                 data = json.loads(msg["web_app_data"]["data"])
+                order_id = data.get("order_id")
+                # Валидация заказа по базе данных для исключения подмены стоимости (CWE-472)
+                order = database.get_order(order_id) if order_id else None
+                total_amount = order["total_amount"] if order else data.get("total", 0)
+                safe_order_id = html.escape(str(order_id or "—"))
                 receipt = (
                     "🎉 <b>Ваш заказ успешно зарегистрирован!</b>\n\n"
-                    f"<b>Номер заказа:</b> <code>{data.get('order_id')}</code>\n"
-                    f"<b>Сумма к оплате:</b> {data.get('total', 0):,} ₽\n\n"
+                    f"<b>Номер заказа:</b> <code>{safe_order_id}</code>\n"
+                    f"<b>Сумма к оплате:</b> {total_amount:,} ₽\n\n"
                     "Менеджер свяжется с вами для подтверждения доставки. "
                     "Спасибо за покупку в V1-Store!"
                 ).replace(",", " ")
@@ -349,15 +398,17 @@ def main():
     logger.info("Для остановки нажмите Ctrl+C (SIGINT)")
     logger.info("=" * 65)
 
-    # Обработка грациозного завершения по Ctrl+C
-    def sigint_handler(signum, frame):
-        logger.info("\nПолучен сигнал завершения работы (SIGINT). Остановка...")
+    # Обработка грациозного завершения по Ctrl+C (SIGINT) и SIGTERM
+    def shutdown_handler(signum, frame):
+        sig_name = "SIGINT" if signum == signal.SIGINT else "SIGTERM"
+        logger.info(f"\nПолучен сигнал завершения работы ({sig_name}). Корректная остановка сервисов...")
         if bot_controller:
             bot_controller.stop()
-        threading.Thread(target=httpd.shutdown).start()
-        sys.exit(130)
+        threading.Thread(target=httpd.shutdown, daemon=True).start()
 
-    signal.signal(signal.SIGINT, sigint_handler)
+    signal.signal(signal.SIGINT, shutdown_handler)
+    if hasattr(signal, "SIGTERM"):
+        signal.signal(signal.SIGTERM, shutdown_handler)
 
     try:
         httpd.serve_forever()
@@ -366,6 +417,7 @@ def main():
     finally:
         httpd.server_close()
         logger.info("Сервер успешно остановлен. До свидания!")
+        sys.exit(130)
 
 
 if __name__ == "__main__":

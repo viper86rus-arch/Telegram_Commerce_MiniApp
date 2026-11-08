@@ -1,7 +1,8 @@
 # 🛍️ V1PER IT Solutions | Telegram Commerce MiniApp (TMA)
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-22c55e.svg?logo=githubpages&logoColor=white)](https://viper86rus-arch.github.io/Telegram_Commerce_MiniApp/)
-[![Tests](https://img.shields.io/badge/Tests-13%2F13%20Passed%20(100%25)-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-14%2F14%20Passed%20(100%25)-brightgreen.svg)](tests/)
+[![Security Audit](https://img.shields.io/badge/Security%20Audit-8%2F8%20Hardened%20(100%25)-brightgreen.svg)](audit_stress_test.py)
 [![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![Studio](https://img.shields.io/badge/Studio-V1PER_IT_Solutions-emerald.svg)]()
 [![Telegram](https://img.shields.io/badge/Telegram_Bot_API-v7.0%2B-2CA5E0.svg?logo=telegram&logoColor=white)](https://core.telegram.org/bots/webapps)
@@ -178,6 +179,31 @@ python server.py --demo
       "message": "Заказ успешно принят в обработку."
     }
     ```
+
+---
+
+## 🛡️ Аудит безопасности и стресс-тестирование
+
+Кодовая база прошла полный ревизионный аудит защищенности и стресс-тестирование (`audit_stress_test.py`) по 8 ключевым векторам отказоустойчивости и информационной безопасности:
+
+```bash
+# Запуск полного стресс-теста безопасности:
+python audit_stress_test.py
+
+# Запуск модульных тестов:
+python -m unittest discover -s tests -v
+```
+
+| Вектор аудита | Статус | Описание реализованной защиты |
+|---|:---:|---|
+| **Directory Traversal (CWE-22, CWE-548)** | 🟢 Защищено | Блокировка выхода за пределы `web/`, запрет автолистинга каталогов (`list_directory`). |
+| **Price Tampering (CWE-472)** | 🟢 Защищено | Сервер полностью игнорирует клиентские цены и производит строгий пересчет сумм по SQLite. |
+| **XSS & HTML Injection (CWE-79, CWE-116)** | 🟢 Защищено | Экранирование всех пользовательских полей (`html.escape`), безопасная работа с DOM, CSP заголовки. |
+| **SQLite Concurrency & WAL (CWE-662)** | 🟢 Защищено | PRAGMA WAL, `busy_timeout = 5000`, пул `ClosingConnection` с гарантированным закрытием дескрипторов. |
+| **Memory DoS & Slowloris (CWE-770, CWE-400)** | 🟢 Защищено | Лимит размера тела запроса (`MAX_CONTENT_LENGTH = 1MB`), валидация заголовка `Content-Length`. |
+| **Threading & Signals (CWE-400)** | 🟢 Защищено | Неблокирующий `ThreadingHTTPServer`, грациозное завершение по `SIGINT` (Ctrl+C, exit code 130) и `SIGTERM`. |
+| **CSV / Excel Formula Injection (CWE-1236)** | 🟢 Защищено | Автоматическая санитизация префиксом `'` опасных формул (`=`, `+`, `-`, `@`, `\t`), UTF-8 BOM и разделитель `;`. |
+| **PII Data Masking in Logs (CWE-532)** | 🟢 Защищено | Маскирование персональных данных клиентов в журналах сервера и базы данных. |
 
 ---
 

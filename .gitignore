@@ -5,7 +5,13 @@ __pycache__/
 
 # SQLite Database & Storage
 data/*.db
+data/*.db-wal
+data/*.db-shm
 data/*.sqlite3
+data/*.csv
+*.db
+*.db-wal
+*.db-shm
 
 # Environment credentials & local secrets
 .env

@@ -17,6 +17,8 @@ import logging
 import uuid
 from typing import List, Dict, Any, Optional
 
+import csv
+
 # Настройка логирования
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("StoreDB")
@@ -29,13 +31,26 @@ DEFAULT_DB_PATH = os.path.join(os.path.dirname(__file__), "data", "store.db")
 # 1. ИНИЦИАЛИЗАЦИЯ СХЕМЫ ДАННЫХ
 # ==============================================================================
 
+class ClosingConnection(sqlite3.Connection):
+    """Кастомный класс соединения с автоматическим закрытием дескриптора при выходе из контекста."""
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        try:
+            super().__exit__(exc_type, exc_val, exc_tb)
+        finally:
+            self.close()
+
+
 def get_connection(db_path: str = DEFAULT_DB_PATH) -> sqlite3.Connection:
-    """Создает соединение с SQLite и активирует режим строк-словарей."""
+    """Создает соединение с SQLite и активирует режим строк-словарей, WAL и таймауты."""
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    conn = sqlite3.connect(db_path, check_same_thread=False)
+    conn = sqlite3.connect(db_path, factory=ClosingConnection, check_same_thread=False, timeout=10.0)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode = WAL;")
+    conn.execute("PRAGMA busy_timeout = 5000;")
+    conn.execute("PRAGMA synchronous = NORMAL;")
     conn.execute("PRAGMA foreign_keys = ON;")
     return conn
+
 
 
 def init_db(db_path: str = DEFAULT_DB_PATH) -> None:
@@ -249,13 +264,25 @@ def create_order(
         # Валидация позиций по актуальным ценам из БД
         for item in items:
             product_id = item.get("id")
-            try:
-                quantity = int(item.get("quantity", 1))
-            except (ValueError, TypeError):
-                continue
+            raw_qty = item.get("quantity", 1)
 
-            if quantity <= 0:
-                continue
+            # Валидация количества (CWE-20, Integer Overflow)
+            if isinstance(raw_qty, (int, float)) and not isinstance(raw_qty, bool):
+                if isinstance(raw_qty, float) and not raw_qty.is_integer():
+                    raise ValueError(f"Дробное количество не поддерживается: {raw_qty}")
+                quantity = int(raw_qty)
+            elif isinstance(raw_qty, str):
+                s_qty = raw_qty.strip()
+                if not s_qty.isdigit():
+                    raise ValueError(f"Некорректное строковое количество: {raw_qty}")
+                if len(s_qty) > 5:
+                    raise ValueError("Превышен допустимый лимит количества товара")
+                quantity = int(s_qty)
+            else:
+                raise ValueError(f"Недопустимый тип количества товара: {type(raw_qty).__name__}")
+
+            if quantity <= 0 or quantity > 1000:
+                raise ValueError(f"Количество товара должно быть в диапазоне от 1 до 1000 (передано: {quantity})")
 
             cursor.execute("SELECT id, name, price FROM products WHERE id = ?;", (product_id,))
             prod = cursor.fetchone()
@@ -297,7 +324,8 @@ def create_order(
 
         conn.commit()
 
-    logger.info(f"Заказ {order_id} успешно оформлен на сумму {total_amount} руб. Клиент: {customer_name}")
+    mask_name = customer_name[:2] + "***" if len(customer_name) > 2 else "***"
+    logger.info(f"Заказ {order_id} успешно оформлен на сумму {total_amount} руб. Клиент: {mask_name}")
     return {
         "order_id": order_id,
         "total_amount": total_amount,
@@ -307,3 +335,56 @@ def create_order(
         "payment_method": payment_method,
         "items": calculated_items
     }
+
+
+def get_order(order_id: str, db_path: str = DEFAULT_DB_PATH) -> Optional[Dict[str, Any]]:
+    """Получает данные заказа по его ID для валидации и отправки чеков."""
+    with get_connection(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM orders WHERE order_id = ?;", (order_id,))
+        row = cursor.fetchone()
+        if not row:
+            return None
+        cursor.execute("SELECT * FROM order_items WHERE order_id = ?;", (order_id,))
+        items = cursor.fetchall()
+        order = dict(row)
+        order["items"] = [dict(it) for it in items]
+        return order
+
+
+def sanitize_csv_cell(value: Any) -> str:
+    """Нейтрализует CSV/Excel Formula Injection (CWE-1236)."""
+    if value is None:
+        return ""
+    s = str(value).replace("\r", " ").replace("\n", " ").strip()
+    if s and s[0] in ("=", "+", "-", "@", "\t"):
+        return f"'{s}"
+    return s
+
+
+def export_orders_to_csv(filepath: Optional[str] = None, db_path: str = DEFAULT_DB_PATH) -> str:
+    """Безопасный экспорт заказов в CSV (UTF-8 BOM, delimiter=;) с защитой от Formula Injection (CWE-1236)."""
+    out_path = filepath or os.path.join(os.path.dirname(__file__), "data", "orders_export.csv")
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    with get_connection(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM orders ORDER BY created_at DESC;")
+        rows = cursor.fetchall()
+
+    with open(out_path, "w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.writer(f, delimiter=";")
+        writer.writerow(["ID Заказа", "Дата", "Клиент", "Телефон", "Адрес", "Метод оплаты", "Сумма (руб)", "Статус", "Примечания"])
+        for r in rows:
+            writer.writerow([
+                sanitize_csv_cell(r["order_id"]),
+                sanitize_csv_cell(r["created_at"]),
+                sanitize_csv_cell(r["customer_name"]),
+                sanitize_csv_cell(r["phone"]),
+                sanitize_csv_cell(r["address"]),
+                sanitize_csv_cell(r["payment_method"]),
+                sanitize_csv_cell(r["total_amount"]),
+                sanitize_csv_cell(r["status"]),
+                sanitize_csv_cell(r["notes"]),
+            ])
+    return out_path
+
