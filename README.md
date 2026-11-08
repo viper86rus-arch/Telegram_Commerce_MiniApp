@@ -1,14 +1,14 @@
 # 🛍️ V1PER IT Solutions | Telegram Commerce MiniApp (TMA)
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-22c55e.svg?logo=githubpages&logoColor=white)](https://viper86rus-arch.github.io/Telegram_Commerce_MiniApp/)
-[![Tests](https://img.shields.io/badge/Tests-14%2F14%20Passed%20(100%25)-brightgreen.svg)](tests/)
-[![Security Audit](https://img.shields.io/badge/Security%20Audit-8%2F8%20Hardened%20(100%25)-brightgreen.svg)](audit_stress_test.py)
-[![Python Version](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![Studio](https://img.shields.io/badge/Studio-V1PER_IT_Solutions-emerald.svg)]()
-[![Telegram](https://img.shields.io/badge/Telegram_Bot_API-v7.0%2B-2CA5E0.svg?logo=telegram&logoColor=white)](https://core.telegram.org/bots/webapps)
-[![Dependencies](https://img.shields.io/badge/Dependencies-Zero_Pip_%2F_Zero_Bloat-blueviolet.svg)](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp)
-[![Database](https://img.shields.io/badge/Database-SQLite3_Standard_Lib-003B57.svg?logo=sqlite&logoColor=white)](https://sqlite.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+[![Live Demo](https://badgen.net/badge/Live%20Demo/Interactive%20App/green?icon=telegram)](https://viper86rus-arch.github.io/Telegram_Commerce_MiniApp/)
+[![Tests](https://badgen.net/badge/Tests/14%2F14%20Passed/green)](tests/)
+[![Security Audit](https://badgen.net/badge/Security%20Audit/8%2F8%20Hardened/green)](audit_stress_test.py)
+[![Python Version](https://badgen.net/badge/Python/3.10%20-%203.13/blue?icon=python)](https://www.python.org/)
+[![Studio](https://badgen.net/badge/Studio/V1PER%20IT%20Solutions/cyan)](https://github.com/viper86rus-arch)
+[![Telegram](https://badgen.net/badge/Telegram%20Bot%20API/v7.0+/blue?icon=telegram)](https://core.telegram.org/bots/webapps)
+[![Dependencies](https://badgen.net/badge/Dependencies/Zero-Pip/purple)](https://github.com/viper86rus-arch/Telegram_Commerce_MiniApp)
+[![Database](https://badgen.net/badge/Database/SQLite3%20WAL/blue)](https://sqlite.org/)
+[![License: MIT](https://badgen.net/badge/license/MIT/yellow)](LICENSE)
 
 > 🎮 **[Запустить интерактивное Live Demo в браузере](https://viper86rus-arch.github.io/Telegram_Commerce_MiniApp/)**  
 > **Полнофункциональный эталонный интернет-магазин и витрина заказов для Telegram Mini Apps (TMA) от студии V1PER IT Solutions.**  
