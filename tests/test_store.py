@@ -125,6 +125,8 @@ class TestAPIAndStaticAssets(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Запуск изолированного тестового HTTP-сервера на динамическом порту."""
+        database.init_db()
+        database.seed_demo_catalog()
         cls.server = ThreadingHTTPServer(("127.0.0.1", 0), server.MiniAppRequestHandler)
         cls.port = cls.server.server_port
         cls.BASE_URL = f"http://127.0.0.1:{cls.port}"
